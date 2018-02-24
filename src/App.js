@@ -71,7 +71,7 @@ class App extends Component {
     }
 
     updateMessage = (message) => {
-        let updatedItem = this.state.messages.find(msg => msg.id == message.id)
+        let updatedItem = this.state.messages.find(msg => msg.id === message.id)
         this.setState((prevState) => {
             return {
                 messages: [
@@ -83,10 +83,14 @@ class App extends Component {
         })
     }
 
+    updateAllMessages = (messages) => {
+        this.setState({messages: messages})
+    }
+
     render() {
         return (
             <div>
-                <ToolBar/>
+                <ToolBar messages={this.state.messages} updateAllMessages={this.updateAllMessages}/>
                 <Messages messages={this.state.messages} updateMessage={this.updateMessage}/>
             </div>
         );

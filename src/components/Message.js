@@ -59,6 +59,7 @@ const Message = ({message, updateMessage}) => {
                 </div>
             </div>
             <div className="col-xs-11">
+                {message.labels.map(label => <span key={label} className="label label-warning">{label}</span>)}
                 <a href="#">
                     {message.subject}
                 </a>

@@ -3,9 +3,11 @@ import React from 'react'
 
 const Message = ({message, updateMessage}) => {
     const setMessageStyle = () => {
-        if (message.selected === true) return 'row message selected'
-        else if (message.read === true) return "row message read"
-        else return "row message unread"
+        let msg = "row message"
+        if (message.selected === true) msg = msg +  " selected"
+        if (message.read === true) msg = msg +  " read"
+        else msg = msg +  " unread"
+        return msg;
     }
 
     const setStarStyle = () => {

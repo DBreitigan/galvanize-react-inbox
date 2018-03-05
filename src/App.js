@@ -2,72 +2,35 @@ import React, {Component} from 'react';
 import './App.css';
 import Messages from "./components/Messages";
 import ToolBar from "./components/Toolbar";
-
-const messages = [
-    {
-        "id": 1,
-        "subject": "You can't input the protocol without calculating the mobile RSS protocol!",
-        "read": false,
-        "starred": true,
-        "labels": ["dev", "personal"]
-    },
-    {
-        "id": 2,
-        "subject": "connecting the system won't do anything, we need to input the mobile AI panel!",
-        "read": false,
-        "starred": false,
-        "selected": true,
-        "labels": []
-    },
-    {
-        "id": 3,
-        "subject": "Use the 1080p HTTP feed, then you can parse the cross-platform hard drive!",
-        "read": false,
-        "starred": true,
-        "labels": ["dev"]
-    },
-    {
-        "id": 4,
-        "subject": "We need to program the primary TCP hard drive!",
-        "read": true,
-        "starred": false,
-        "selected": true,
-        "labels": []
-    },
-    {
-        "id": 5,
-        "subject": "If we override the interface, we can get to the HTTP feed through the virtual EXE interface!",
-        "read": false,
-        "starred": false,
-        "labels": ["personal"]
-    },
-    {
-        "id": 6,
-        "subject": "We need to back up the wireless GB driver!",
-        "read": true,
-        "starred": true,
-        "labels": []
-    },
-    {
-        "id": 7,
-        "subject": "We need to index the mobile PCI bus!",
-        "read": true,
-        "starred": false,
-        "labels": ["dev", "personal"]
-    },
-    {
-        "id": 8,
-        "subject": "If we connect the sensor, we can get to the HDD port through the redundant IB firewall!",
-        "read": true,
-        "starred": true,
-        "labels": []
-    }
-]
+import ComposeForm from "./components/ComposeForm"
 
 class App extends Component {
     constructor(props) {
         super(props)
-        this.state = {messages: messages}
+        this.state = {messages: [], compose: false}
+    }
+
+    async componentDidMount() {
+        await this.getMessages()
+    }
+
+    toggleCompose = () => {
+        this.setState((prevState) => {
+            return {
+                messages: prevState.messages,
+                compose: !prevState.compose
+            }
+
+        })
+    }
+
+    getMessages = async () => {
+        const getMessages = await fetch(`/api/messages`)
+        const messages = await getMessages.json()
+
+        this.setState({
+            messages: messages._embedded.messages
+        })
     }
 
     updateMessage = (message) => {
@@ -83,15 +46,47 @@ class App extends Component {
         })
     }
 
-    updateAllMessages = (messages) => {
-        this.setState({messages: messages})
+    addMessage = async (messageDetails) => {
+        let response = await fetch(`/api/messages`, {
+            method: 'POST',
+            body: JSON.stringify(messageDetails),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        })
+
+        let newMessage = await response.json()
+
+        this.setState({
+            messages: [
+                ...this.state.messages,
+                newMessage],
+            compose: false
+        })
+    }
+
+    updateMessages = async (command) => {
+        await fetch(`/api/messages`, {
+            method: 'PATCH',
+            body: JSON.stringify(command),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        })
+
+        await this.getMessages()
     }
 
     render() {
         return (
             <div>
-                <ToolBar messages={this.state.messages} updateAllMessages={this.updateAllMessages}/>
-                <Messages messages={this.state.messages} updateMessage={this.updateMessage}/>
+                <ToolBar messages={this.state.messages} updateMessages={this.updateMessages}
+                         toggleCompose={this.toggleCompose}/>
+                {this.state.compose ? <ComposeForm addMessage={this.addMessage}/> : null}
+                <Messages messages={this.state.messages} selectMessage={this.updateMessage}
+                          updateMessage={this.updateMessages}/>
             </div>
         );
     }

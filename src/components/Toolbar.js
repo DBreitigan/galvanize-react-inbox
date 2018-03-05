@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ToolBar = ({messages, updateAllMessages}) => {
+const ToolBar = ({messages, updateMessages, toggleCompose}) => {
     const setMessageSelectStyle = () => {
         let selectedCount = messages.filter(msg => {
             return msg.selected === true
@@ -20,60 +20,72 @@ const ToolBar = ({messages, updateAllMessages}) => {
             messages.map(msg => msg.selected = true)
         }
 
-        updateAllMessages(messages)
+        updateMessages(messages)
     }
 
     const markMessagesAsRead = () => {
-        messages.map(msg => {
-            if (msg.selected === true) {
-                msg.read = true
-                msg.selected = false
-            }
-            return msg
-        });
-        updateAllMessages(messages)
+        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
+
+
+        let command = {
+            messageIds: messageIds,
+            command: "read",
+            read: true
+        }
+
+        updateMessages(command)
     }
 
     const markMessagesAsUnread = () => {
-        messages.map(msg => {
-            if (msg.selected === true) {
-                msg.selected = false
-                msg.read = false
-            }
-            return msg
-        });
-        updateAllMessages(messages)
+        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
+
+
+        let command = {
+            messageIds: messageIds,
+            command: "read",
+            read: false
+        }
+
+        updateMessages(command)
     }
 
     const deleteMessages = () => {
-        updateAllMessages(messages.filter(msg => {
-            return msg.selected !== true
-        }))
+        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
+
+        let command = {
+            messageIds: messageIds,
+            command: "delete"
+        }
+
+        updateMessages(command)
     }
 
     const addLabel = (e) => {
-        messages.map(msg => {
-            if (msg.selected === true && msg.labels.indexOf(e.target.value) < 0) {
-                msg.labels.push(e.target.value)
-            }
-            return msg
-        })
-        e.target.value = "Apply label";
+        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
 
-        updateAllMessages(messages)
+        let command = {
+            messageIds: messageIds,
+            command: "addLabel",
+            label: e.target.value
+        }
+
+        e.target.value = "Apply label"
+
+        updateMessages(command)
     }
 
     const removeLabel = (e) => {
-        messages.map(msg => {
-            let msgIndex = msg.labels.indexOf(e.target.value)
-            if (msg.selected === true && msgIndex >= 0) {
-                msg.labels.splice(msgIndex, 1)
-            }
-            return msg
-        })
-        e.target.value = "Remove label";
+        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
 
-        updateAllMessages(messages)
+        let command = {
+            messageIds: messageIds,
+            command: "removeLabel",
+            label: e.target.value
+        }
+
+        e.target.value = "Remove label"
+
+        updateMessages(command)
     }
 
     const isDisabled = () => {
@@ -91,6 +103,10 @@ const ToolBar = ({messages, updateAllMessages}) => {
                     <span className="badge badge">{messages.filter(msg => msg.read !== true).length}</span>
                     {messages.filter(msg => msg.read !== true).length === 1 ? "unread message" : "unread messages"}
                 </p>
+
+                <a className="btn btn-danger" onClick={toggleCompose}>
+                    <i className="fa fa-plus"/>
+                </a>
 
                 <button className="btn btn-default" onClick={selectButton}>
                     <i className={setMessageSelectStyle()}/>

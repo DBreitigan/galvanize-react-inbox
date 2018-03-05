@@ -1,7 +1,7 @@
-// if(message.)
+
 import React from 'react'
 
-const Message = ({message, updateMessage}) => {
+const Message = ({message, selectMessage, updateMessage}) => {
     const setMessageStyle = () => {
         let msg = "row message"
         if (message.selected === true) msg = msg +  " selected"
@@ -29,23 +29,15 @@ const Message = ({message, updateMessage}) => {
             }
         }
 
-        updateMessage(message)
+        selectMessage(message)
     }
 
     const toggleStar = () => {
-        if (message.starred) {
-            message = {
-                ...message,
-                starred: false
-            }
-        } else {
-            message = {
-                ...message,
-                starred: true
-            }
-        }
-
-        updateMessage(message)
+        updateMessage({
+            messageIds: [message.id],
+            command: "star",
+            star: !message.starred
+        })
     }
 
     return (
@@ -67,7 +59,6 @@ const Message = ({message, updateMessage}) => {
                 </a>
             </div>
         </div>
-
     )
 }
 

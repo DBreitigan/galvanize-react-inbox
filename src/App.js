@@ -66,6 +66,13 @@ class App extends Component {
         })
     }
 
+    updateSelectedMessage = (messages) => {
+        this.setState({
+            messages: messages
+        })
+    }
+
+
     updateMessages = async (command) => {
         await fetch(`/api/messages`, {
             method: 'PATCH',
@@ -83,7 +90,7 @@ class App extends Component {
         return (
             <div>
                 <ToolBar messages={this.state.messages} updateMessages={this.updateMessages}
-                         toggleCompose={this.toggleCompose}/>
+                         toggleCompose={this.toggleCompose} updateSelectedMessage={this.updateSelectedMessage}/>
                 {this.state.compose ? <ComposeForm addMessage={this.addMessage}/> : null}
                 <Messages messages={this.state.messages} selectMessage={this.updateMessage}
                           updateMessage={this.updateMessages}/>

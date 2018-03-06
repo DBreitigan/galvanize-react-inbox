@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ToolBar = ({messages, updateMessages, toggleCompose}) => {
+const ToolBar = ({messages, updateMessages, toggleCompose, updateSelectedMessage}) => {
     const setMessageSelectStyle = () => {
         let selectedCount = messages.filter(msg => {
             return msg.selected === true
@@ -20,7 +20,7 @@ const ToolBar = ({messages, updateMessages, toggleCompose}) => {
             messages.map(msg => msg.selected = true)
         }
 
-        updateMessages(messages)
+        updateSelectedMessage(messages)
     }
 
     const markMessagesAsRead = () => {

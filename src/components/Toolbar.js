@@ -1,99 +1,59 @@
 import React from 'react'
+import {bindActionCreators} from "redux"
+import {connect} from "react-redux"
+import {
+    addMessageLabel,
+    deleteSelectedMessages,
+    removeMessageLabel,
+    selectMessages,
+    setCompose,
+    toggleMessagesRead
+} from "../actions"
 
-const ToolBar = ({messages, updateMessages, toggleCompose, updateSelectedMessage}) => {
+const ToolBar = ({messages, compose, toggleMessagesRead, setCompose, selectMessages, deleteSelectedMessages, addMessageLabel, removeMessageLabel}) => {
+
+    let selectedCount = messages.filter(msg => {
+        return msg.selected === true
+    }).length;
+
     const setMessageSelectStyle = () => {
-        let selectedCount = messages.filter(msg => {
-            return msg.selected === true
-        }).length;
         if (selectedCount === 0) return "fa fa-square-o"
         else if (selectedCount > 0 && selectedCount !== messages.length) return "fa fa-minus-square-o"
         else return "fa fa-check-square-o"
     }
 
     const selectButton = () => {
-        let selectedCount = messages.filter(msg => {
-            return msg.selected === true
-        }).length;
-        if (selectedCount === messages.length) {
-            messages.map(msg => msg.selected = false)
-        } else {
-            messages.map(msg => msg.selected = true)
-        }
+        selectMessages(messages)
+    }
 
-        updateSelectedMessage(messages)
+    const toggleCompose = () => {
+        setCompose(!compose)
     }
 
     const markMessagesAsRead = () => {
-        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
-
-
-        let command = {
-            messageIds: messageIds,
-            command: "read",
-            read: true
-        }
-
-        updateMessages(command)
+        toggleMessagesRead(messages, true)
     }
 
     const markMessagesAsUnread = () => {
-        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
-
-
-        let command = {
-            messageIds: messageIds,
-            command: "read",
-            read: false
-        }
-
-        updateMessages(command)
+        toggleMessagesRead(messages, false)
     }
 
     const deleteMessages = () => {
-        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
-
-        let command = {
-            messageIds: messageIds,
-            command: "delete"
-        }
-
-        updateMessages(command)
+        deleteSelectedMessages(messages)
     }
 
     const addLabel = (e) => {
-        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
-
-        let command = {
-            messageIds: messageIds,
-            command: "addLabel",
-            label: e.target.value
-        }
-
+        addMessageLabel(messages, e.target.value)
         e.target.value = "Apply label"
-
-        updateMessages(command)
     }
 
     const removeLabel = (e) => {
-        let messageIds =  messages.filter(msg => msg.selected === true).map(msg => msg.id)
-
-        let command = {
-            messageIds: messageIds,
-            command: "removeLabel",
-            label: e.target.value
-        }
-
+        removeMessageLabel(messages, e.target.value)
         e.target.value = "Remove label"
-
-        updateMessages(command)
     }
 
     const isDisabled = () => {
-        if (messages.filter(msg => {
-                return msg.selected === true
-            }).length === 0) {
-            return "disabled"
-        }
+        if (selectedCount === 0) return "disabled"
     }
 
     return (
@@ -142,4 +102,21 @@ const ToolBar = ({messages, updateMessages, toggleCompose, updateSelectedMessage
     )
 }
 
-export default ToolBar
+const mapStateToProps = state => ({
+    messages: state.messages.all,
+    compose: state.messages.compose
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+    toggleMessagesRead: toggleMessagesRead,
+    setCompose: setCompose,
+    deleteSelectedMessages: deleteSelectedMessages,
+    addMessageLabel: addMessageLabel,
+    selectMessages: selectMessages,
+    removeMessageLabel: removeMessageLabel,
+}, dispatch)
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ToolBar)

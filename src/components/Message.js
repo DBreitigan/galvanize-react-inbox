@@ -1,12 +1,11 @@
-
 import React from 'react'
 
-const Message = ({message, selectMessage, updateMessage}) => {
+const Message = ({message, selectMessage, starMessage}) => {
     const setMessageStyle = () => {
         let msg = "row message"
-        if (message.selected === true) msg = msg +  " selected"
-        if (message.read === true) msg = msg +  " read"
-        else msg = msg +  " unread"
+        if (message.selected === true) msg = msg + " selected"
+        if (message.read === true) msg = msg + " read"
+        else msg = msg + " unread"
         return msg;
     }
 
@@ -17,27 +16,11 @@ const Message = ({message, selectMessage, updateMessage}) => {
 
 
     const toggleSelect = () => {
-        if (message.selected) {
-            message = {
-                ...message,
-                selected: false
-            }
-        } else {
-            message = {
-                ...message,
-                selected: true
-            }
-        }
-
-        selectMessage(message)
+        selectMessage(message.id)
     }
 
     const toggleStar = () => {
-        updateMessage({
-            messageIds: [message.id],
-            command: "star",
-            star: !message.starred
-        })
+        starMessage(message)
     }
 
     return (
